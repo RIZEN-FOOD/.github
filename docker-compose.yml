@@ -1,0 +1,29 @@
+# 로컬 개발용 PostgreSQL.
+# 운영 DB 는 별도(RDS 등)이며 이 파일은 로컬 전용이다.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rizen-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-rizenfood}
+      POSTGRES_USER: ${POSTGRES_USER:-rizen}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?".env 에 POSTGRES_PASSWORD 를 설정해야 한다"}
+      # 한글 데이터 정렬·비교를 위한 로케일
+      LANG: ko_KR.utf8
+    ports:
+      # 호스트에만 바인딩한다. 외부 노출 금지.
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      # 다른 컨테이너가 DB 준비를 기다릴 수 있도록 헬스체크를 둔다.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rizen} -d ${POSTGRES_DB:-rizenfood}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  postgres-data:
+    name: rizen-postgres-data

@@ -1,0 +1,23 @@
+# ─────────────────────────────────────────────
+#  이 저장소는 .github (프로젝트 문서) 레포다.
+#  BE 와 FE 는 각각 독립된 레포이므로 여기서 추적하지 않는다.
+#      BE  https://github.com/RIZEN-FOOD/BE
+#      FE  https://github.com/RIZEN-FOOD/FE
+# ─────────────────────────────────────────────
+BE/
+FE/
+
+# ── 시크릿 (절대 커밋 금지) ──
+.env
+.env.*
+!.env.example
+
+# ── Docker 볼륨 ──
+.docker-data/
+
+# ── IDE / OS ──
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

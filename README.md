@@ -65,7 +65,7 @@ Java 를 따로 깔 필요는 없다. Gradle 이 JDK 21 을 자동으로 내려�
     npm install     # 처음 한 번
     npm run dev
 
-http://localhost:3000 — 현재는 디자인 토큰 확인용 화면이다 (Phase 4 에서 실제 메인으로 교체).
+http://localhost:3000 — 실제 메인 페이지. (포트가 쓰이면 next 가 다음 번호로 잡는다.)
 
 ---
 
@@ -73,6 +73,33 @@ http://localhost:3000 — 현재는 디자인 토큰 확인용 화면이다 (Pha
 
     docker compose down          # 컨테이너만 내림 (데이터 유지)
     docker compose down -v       # 데이터까지 삭제
+
+---
+
+## 구현 현황
+
+메인·상품·인증·마이페이지·관리자 + 자사몰 커머스(장바구니·주문·결제·위시리스트·후기·취소반품교환)까지 화면과 API 가 붙어 있다.
+
+### 공개 (스토어)
+
+- 메인, 상품 목록·상세, 후기, 공지, 1:1 문의
+- 장바구니 → 주문·결제(현재 PG 는 목(mock) 어댑터) → 주문 상세 → 취소·반품·교환 요청
+- 마이페이지(주문·위시리스트·후기·문의·계정)
+- 법정 페이지: 이용약관 · 개인정보처리방침 · 배송/교환/환불
+
+### 관리자 (`/admin`, 로그인 후 · 전 API `@PreAuthorize`)
+
+- 주문 관리 · 취소·반품·교환 · 상품 관리 · 배너 관리 · 공지사항 · 후기 관리 · 문의함 · 사이트 설정
+- 회원 관리는 준비 중
+
+### 미확정 · 남은 일
+
+- **PG 연동** — 현재 목 어댑터. `payment` 테이블은 PG 중립 구조라 어댑터만 교체한다 (포트원 유력)
+- **사업자 정보 · 통신판매업 신고번호** — 확정 후 `site_setting` 에 입력 → 푸터에 노출
+- 소셜 로그인(카카오·네이버), 우편번호 API, S3/CloudFront 이미지, 배포(Vercel + EC2)
+- 이벤트·쿠폰은 테이블만 있고 화면·API 는 붙이지 않는다 (요건 확정 전)
+
+> 개인정보처리방침·이용약관·식품 표시사항의 문안은 초안이다. 게시 전 사업자가 검토·확정한다.
 
 ---
 
@@ -98,7 +125,12 @@ http://localhost:3000 — 현재는 디자인 토큰 확인용 화면이다 (Pha
 
 사용 예: `bg-clay`, `text-ink-soft`, `border-line`, `max-w-wrap`
 
-서체는 `font-en` (Archivo) / `font-kr` (Noto Sans KR) / `font-script` (Kaushan Script, 로고 전용).
+서체(토큰):
+
+- `font-kr` — Pretendard Variable (본문 한글, 동적 서브셋) → Noto Sans KR 폴백
+- `font-display` — Fraunces (제목 세리프) → Pretendard 폴백
+- `font-en` — Archivo (라틴 UI). 숫자 강조 `.font-numeric` 도 Archivo
+- `font-script` — Kaushan Script (로고 전용)
 
 공용 컴포넌트는 `FE/src/components/ui` — `Button`, `Container`, `SectionTag`, `Card`.
 
